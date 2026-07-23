@@ -38,10 +38,10 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Initialize database schema
+      - name: Run database migrations
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/cultivate
-        run: bun run db:init
+        run: bun run db:migrate
 
       - name: Run test suite
         env:
