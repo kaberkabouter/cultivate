@@ -1,4 +1,4 @@
-name: Cultivate CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-and-build:
-    name: 🧪 Automated Testing & Production Build
+    name: Test and Build
     runs-on: ubuntu-latest
 
     services:
@@ -27,45 +27,44 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⚡ Setup Bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: 🗄️ Initialize database schema
+      - name: Initialize database schema
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/cultivate
         run: bun run db:init
 
-      - name: 🧪 Run Vitest test suite
+      - name: Run test suite
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/cultivate
           JWT_SECRET: ci_test_jwt_secret_32bytes_minimum_key
         run: bun run test
 
-      - name: 🏗️ Verify Next.js production build
+      - name: Build application
         run: bun run build
 
-  deploy-to-coolify:
-    name: 🚀 Deploy to Coolify
+  deploy:
+    name: Deploy to Coolify
     needs: test-and-build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📡 Trigger Coolify Application Deployment
+      - name: Trigger deployment webhook
         env:
           COOLIFY_DEPLOY_WEBHOOK: ${{ secrets.COOLIFY_DEPLOY_WEBHOOK }}
         run: |
           if [ -n "$COOLIFY_DEPLOY_WEBHOOK" ]; then
-            echo "Triggering Coolify deployment..."
-            curl -X GET "$COOLIFY_DEPLOY_WEBHOOK"
+            curl -s -X GET "$COOLIFY_DEPLOY_WEBHOOK"
           else
-            echo "COOLIFY_DEPLOY_WEBHOOK secret not set. Skipping deployment trigger."
+            echo "COOLIFY_DEPLOY_WEBHOOK secret not set. Skipping deployment."
           fi
