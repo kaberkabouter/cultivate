@@ -37,10 +37,12 @@ export interface ForecastPoint {
   baselineExpense: number
   topicIncome: number
   topicExpense: number
+  scenarioIncome: number
+  scenarioExpenses: number
   dailyNet: number
 }
 
-function advance(d: Date, r: ForecastTransaction['recurrence']): Date {
+export function advance(d: Date, r: ForecastTransaction['recurrence']): Date {
   switch (r) {
     case 'weekly':
       return addWeeks(d, 1)
@@ -55,12 +57,14 @@ function advance(d: Date, r: ForecastTransaction['recurrence']): Date {
   }
 }
 
-function expandRecurring(t: ForecastTransaction, from: Date, to: Date): Date[] {
-  const start = parseISO(t.date)
+export function expandRecurring(t: ForecastTransaction, from: Date, to: Date): Date[] {
+  const start = startOfDay(parseISO(t.date))
+  const fromDay = startOfDay(from)
+  const toDay = startOfDay(to)
   const dates: Date[] = []
 
   if (t.recurrence === 'once') {
-    if (!isBefore(start, from) && !isAfter(start, to)) {
+    if (!isBefore(start, fromDay) && !isAfter(start, toDay)) {
       dates.push(start)
     }
     return dates
@@ -68,11 +72,11 @@ function expandRecurring(t: ForecastTransaction, from: Date, to: Date): Date[] {
 
   let cursor = start
   // Advance until cursor reaches or passes from date
-  while (isBefore(cursor, from)) {
+  while (isBefore(cursor, fromDay)) {
     cursor = advance(cursor, t.recurrence)
   }
   // Collect dates up to to date
-  while (!isAfter(cursor, to)) {
+  while (!isAfter(cursor, toDay)) {
     dates.push(cursor)
     cursor = advance(cursor, t.recurrence)
   }
@@ -83,7 +87,6 @@ function expandRecurring(t: ForecastTransaction, from: Date, to: Date): Date[] {
 export function buildForecast(
   transactions: ForecastTransaction[],
   topics: ForecastTopic[],
-  activeTopicIds: string[],
   months = 12,
   startingBalance = 0
 ): ForecastPoint[] {
@@ -91,7 +94,7 @@ export function buildForecast(
   const endDate = addMonths(today, months)
 
   const defaultTopicIds = new Set(topics.filter((t) => t.isDefault).map((t) => t.id))
-  const activeTopicSet = new Set(activeTopicIds)
+  const activeTopicSet = new Set(topics.filter((t) => !t.isDefault && t.isActiveInForecast).map((t) => t.id))
 
   // Map of date string -> daily sums
   const dailyMap: Record<
@@ -125,15 +128,15 @@ export function buildForecast(
 
       if (isDefaultTopic) {
         if (t.type === 'income') {
-          dailyMap[key].baselineIncome += t.amount
+          dailyMap[key].baselineIncome += Number(t.amount)
         } else {
-          dailyMap[key].baselineExpense += t.amount
+          dailyMap[key].baselineExpense += Number(t.amount)
         }
       } else if (isActiveTopic) {
         if (t.type === 'income') {
-          dailyMap[key].topicIncome += t.amount
+          dailyMap[key].topicIncome += Number(t.amount)
         } else {
-          dailyMap[key].topicExpense += t.amount
+          dailyMap[key].topicExpense += Number(t.amount)
         }
       }
     }
@@ -158,9 +161,27 @@ export function buildForecast(
       baselineExpense,
       topicIncome,
       topicExpense,
+      scenarioIncome: baselineIncome + topicIncome,
+      scenarioExpenses: baselineExpense + topicExpense,
       dailyNet: baselineIncome - baselineExpense + (topicIncome - topicExpense),
     })
   }
 
   return points
+}
+
+export function summariseMonth(points: ForecastPoint[]) {
+  const baselineIncome = points.reduce((s, p) => s + p.baselineIncome, 0)
+  const baselineExpenses = points.reduce((s, p) => s + p.baselineExpense, 0)
+  const topicIncome = points.reduce((s, p) => s + p.topicIncome, 0)
+  const topicExpenses = points.reduce((s, p) => s + p.topicExpense, 0)
+
+  return {
+    baselineIncome,
+    baselineExpenses,
+    baselineNet: baselineIncome - baselineExpenses,
+    scenarioIncome: baselineIncome + topicIncome,
+    scenarioExpenses: baselineExpenses + topicExpenses,
+    scenarioNet: baselineIncome + topicIncome - (baselineExpenses + topicExpenses),
+  }
 }

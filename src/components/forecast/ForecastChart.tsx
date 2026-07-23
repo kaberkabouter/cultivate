@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -10,7 +9,8 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts'
-import { buildForecast, ForecastTransaction, ForecastTopic } from '@/lib/forecast'
+import { ForecastTransaction, ForecastTopic } from '@/lib/forecast'
+import { useForecast } from '@/hooks/useForecast'
 import { TrendingUp, Calendar, DollarSign, Layers } from 'lucide-react'
 
 interface ForecastChartProps {
@@ -19,19 +19,17 @@ interface ForecastChartProps {
 }
 
 export function ForecastChart({ transactions, topics }: ForecastChartProps) {
-  const [months, setMonths] = useState<number>(12)
-  const [startingBalance, setStartingBalance] = useState<number>(0)
+  const {
+    months,
+    setMonths,
+    startingBalance,
+    setStartingBalance,
+    forecastPoints,
+    activeOptionalTopics,
+  } = useForecast({ transactions, topics })
 
-  const activeTopicIds = useMemo(() => {
-    return topics.filter((t) => t.isActiveInForecast).map((t) => t.id)
-  }, [topics])
-
-  const forecastData = useMemo(() => {
-    return buildForecast(transactions, topics, activeTopicIds, months, startingBalance)
-  }, [transactions, topics, activeTopicIds, months, startingBalance])
-
-  const currentScenarioBalance = forecastData.length > 0 ? forecastData[forecastData.length - 1].scenarioBalance : 0
-  const currentBaselineBalance = forecastData.length > 0 ? forecastData[forecastData.length - 1].baselineBalance : 0
+  const currentScenarioBalance = forecastPoints.length > 0 ? forecastPoints[forecastPoints.length - 1].scenarioBalance : 0
+  const currentBaselineBalance = forecastPoints.length > 0 ? forecastPoints[forecastPoints.length - 1].baselineBalance : 0
   const topicDelta = currentScenarioBalance - currentBaselineBalance
 
   const formatCurrency = (val: number) => {
@@ -39,7 +37,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="forecast-chart-container">
       {/* Metric Summary Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl shadow-xl flex items-center justify-between">
@@ -70,7 +68,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
             <p className={`text-2xl font-extrabold mt-1 ${topicDelta >= 0 ? 'text-teal-400' : 'text-rose-400'}`}>
               {topicDelta >= 0 ? '+' : ''}{formatCurrency(topicDelta)}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">{activeTopicIds.length} Active Scenario Topics</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{activeOptionalTopics.length} Active Scenario Topics</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center">
             <Layers className="w-5 h-5" />
@@ -98,6 +96,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
                 type="number"
                 value={startingBalance}
                 onChange={(e) => setStartingBalance(parseFloat(e.target.value) || 0)}
+                aria-label="Starting Balance"
                 className="w-20 bg-transparent text-slate-100 font-semibold text-right outline-none"
               />
             </div>
@@ -108,6 +107,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
                 <button
                   key={m}
                   onClick={() => setMonths(m)}
+                  aria-label={`${m} Months Timeframe`}
                   className={`px-3 py-1 rounded-lg font-semibold transition cursor-pointer ${
                     months === m
                       ? 'bg-emerald-500 text-slate-950 shadow-md'
@@ -124,7 +124,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
         {/* Recharts Area Chart */}
         <div className="h-[360px] w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={forecastData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <AreaChart data={forecastPoints} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="scenarioGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />

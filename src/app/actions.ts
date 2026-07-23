@@ -1,22 +1,27 @@
 'use server'
 
-import { registerUser, loginUser, logoutUser, getCurrentUser } from '@/lib/dal/users'
-import { getUserTopics, createTopic, updateTopic, toggleTopicForecast, deleteTopic } from '@/lib/dal/topics'
-import { getUserTransactions, createTransaction, updateTransaction, deleteTransaction } from '@/lib/dal/transactions'
+import { registerUser, loginUser, logoutUser } from '@/lib/dal/users'
+import { createTopic, toggleTopicForecast, deleteTopic } from '@/lib/dal/topics'
+import { createTransaction, deleteTransaction } from '@/lib/dal/transactions'
+import { loginSchema, registerSchema } from '@/lib/schemas/auth'
+import { createTopicSchema } from '@/lib/schemas/topic'
+import { createTransactionSchema } from '@/lib/schemas/transaction'
 import { revalidatePath } from 'next/cache'
 
 // Auth Actions
 export async function registerAction(formData: FormData) {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const displayName = formData.get('displayName') as string
+  const parsed = registerSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    displayName: formData.get('displayName'),
+  })
 
-  if (!email || !password) {
-    return { error: 'Email and password are required.' }
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid input data.' }
   }
 
   try {
-    await registerUser(email, password, displayName)
+    await registerUser(parsed.data.email, parsed.data.password, parsed.data.displayName)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
@@ -25,15 +30,17 @@ export async function registerAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const parsed = loginSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  })
 
-  if (!email || !password) {
-    return { error: 'Email and password are required.' }
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid input data.' }
   }
 
   try {
-    await loginUser(email, password)
+    await loginUser(parsed.data.email, parsed.data.password)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
@@ -48,14 +55,18 @@ export async function logoutAction() {
 
 // Topic Actions
 export async function createTopicAction(formData: FormData) {
-  const name = formData.get('name') as string
-  const description = formData.get('description') as string
-  const color = (formData.get('color') as string) || '#3b82f6'
+  const parsed = createTopicSchema.safeParse({
+    name: formData.get('name'),
+    description: formData.get('description'),
+    color: formData.get('color') || '#3b82f6',
+  })
 
-  if (!name) return { error: 'Topic name is required.' }
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid topic details.' }
+  }
 
   try {
-    await createTopic({ name, description, color })
+    await createTopic(parsed.data)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
@@ -64,54 +75,47 @@ export async function createTopicAction(formData: FormData) {
 }
 
 export async function toggleTopicForecastAction(topicId: string, isActive: boolean) {
+  if (!topicId) return { error: 'Topic ID is required.' }
+
   try {
     await toggleTopicForecast(topicId, isActive)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
-    return { error: err.message || 'Failed to toggle topic' }
+    return { error: err.message || 'Failed to toggle topic.' }
   }
 }
 
 export async function deleteTopicAction(topicId: string) {
+  if (!topicId) return { error: 'Topic ID is required.' }
+
   try {
     await deleteTopic(topicId)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
-    return { error: err.message || 'Failed to delete topic' }
+    return { error: err.message || 'Failed to delete topic.' }
   }
 }
 
 // Transaction Actions
 export async function createTransactionAction(formData: FormData) {
-  const topicId = formData.get('topicId') as string
-  const type = formData.get('type') as 'income' | 'expense'
-  const amountStr = formData.get('amount') as string
-  const description = formData.get('description') as string
-  const category = formData.get('category') as string
-  const date = formData.get('date') as string
-  const recurrence = (formData.get('recurrence') as any) || 'once'
+  const parsed = createTransactionSchema.safeParse({
+    topicId: formData.get('topicId'),
+    type: formData.get('type'),
+    amount: formData.get('amount'),
+    description: formData.get('description'),
+    category: formData.get('category'),
+    date: formData.get('date'),
+    recurrence: formData.get('recurrence') || 'once',
+  })
 
-  if (!topicId || !type || !amountStr || !description || !date) {
-    return { error: 'Missing required fields.' }
-  }
-
-  const amount = parseFloat(amountStr)
-  if (isNaN(amount) || amount <= 0) {
-    return { error: 'Amount must be a positive number.' }
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid transaction details.' }
   }
 
   try {
-    await createTransaction({
-      topicId,
-      type,
-      amount,
-      description,
-      category,
-      date,
-      recurrence,
-    })
+    await createTransaction(parsed.data)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
@@ -120,11 +124,13 @@ export async function createTransactionAction(formData: FormData) {
 }
 
 export async function deleteTransactionAction(id: string) {
+  if (!id) return { error: 'Transaction ID is required.' }
+
   try {
     await deleteTransaction(id)
     revalidatePath('/')
     return { success: true }
   } catch (err: any) {
-    return { error: err.message || 'Failed to delete transaction' }
+    return { error: err.message || 'Failed to delete transaction.' }
   }
 }
