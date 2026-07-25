@@ -7,6 +7,7 @@ import { ForecastChart } from '@/components/forecast/ForecastChart'
 import { DbTopic } from '@/db/schema'
 import { TransactionWithTopic } from '@/lib/dal/transactions'
 import { LineChart, Folder, Receipt } from 'lucide-react'
+import { TabsList, TabsTrigger } from '@/components/ui'
 
 interface DashboardViewProps {
   topics: DbTopic[]
@@ -44,40 +45,28 @@ export function DashboardView({ topics, transactions }: DashboardViewProps) {
     <div className="space-y-8">
       {/* Navigation Tabs */}
       <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
-          <button
+        <TabsList>
+          <TabsTrigger
+            isActive={activeTab === 'forecast'}
             onClick={() => setActiveTab('forecast')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              activeTab === 'forecast'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
           >
             <LineChart className="w-4 h-4" /> Financial Forecast
-          </button>
+          </TabsTrigger>
 
-          <button
+          <TabsTrigger
+            isActive={activeTab === 'topics'}
             onClick={() => setActiveTab('topics')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              activeTab === 'topics'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
           >
             <Folder className="w-4 h-4" /> Topics & Projects ({topics.length})
-          </button>
+          </TabsTrigger>
 
-          <button
+          <TabsTrigger
+            isActive={activeTab === 'transactions'}
             onClick={() => setActiveTab('transactions')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              activeTab === 'transactions'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
           >
             <Receipt className="w-4 h-4" /> Transactions ({transactions.length})
-          </button>
-        </div>
+          </TabsTrigger>
+        </TabsList>
       </div>
 
       {/* Tab Content */}

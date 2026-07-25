@@ -12,6 +12,8 @@ import {
 import { ForecastTransaction, ForecastTopic } from '@/lib/forecast'
 import { useForecast } from '@/hooks/useForecast'
 import { TrendingUp, Calendar, DollarSign, Layers } from 'lucide-react'
+import { Card, CardHeader, CardTitle, CardDescription, StatCard, Button } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 interface ForecastChartProps {
   transactions: ForecastTransaction[]
@@ -40,58 +42,48 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
     <div className="space-y-6" data-testid="forecast-chart-container">
       {/* Metric Summary Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Baseline Forecast</p>
-            <p className="text-2xl font-extrabold text-slate-100 mt-1">{formatCurrency(currentBaselineBalance)}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">End of {months} Months (Base Topics)</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center">
-            <DollarSign className="w-5 h-5" />
-          </div>
-        </div>
+        <StatCard
+          title="Baseline Forecast"
+          value={formatCurrency(currentBaselineBalance)}
+          description={`End of ${months} Months (Base Topics)`}
+          icon={<DollarSign className="w-5 h-5 text-blue-400" />}
+        />
 
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Scenario Forecast</p>
-            <p className="text-2xl font-extrabold text-emerald-400 mt-1">{formatCurrency(currentScenarioBalance)}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Baseline + Active Topics</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5" />
-          </div>
-        </div>
+        <StatCard
+          title="Scenario Forecast"
+          value={formatCurrency(currentScenarioBalance)}
+          description="Baseline + Active Topics"
+          trend="up"
+          change="Forecasted"
+          icon={<TrendingUp className="w-5 h-5 text-emerald-400" />}
+        />
 
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Topics Net Impact</p>
-            <p className={`text-2xl font-extrabold mt-1 ${topicDelta >= 0 ? 'text-teal-400' : 'text-rose-400'}`}>
-              {topicDelta >= 0 ? '+' : ''}{formatCurrency(topicDelta)}
-            </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">{activeOptionalTopics.length} Active Scenario Topics</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center">
-            <Layers className="w-5 h-5" />
-          </div>
-        </div>
+        <StatCard
+          title="Topics Net Impact"
+          value={`${topicDelta >= 0 ? '+' : ''}${formatCurrency(topicDelta)}`}
+          description={`${activeOptionalTopics.length} Active Scenario Topics`}
+          trend={topicDelta >= 0 ? 'up' : 'down'}
+          change={topicDelta >= 0 ? 'Positive Impact' : 'Expense Delta'}
+          icon={<Layers className="w-5 h-5 text-purple-400" />}
+        />
       </div>
 
       {/* Forecast Chart Container */}
-      <div className="bg-slate-900/80 border border-slate-800 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <Card>
+        <CardHeader className="flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 space-y-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <CardTitle>
               <Calendar className="w-5 h-5 text-emerald-400" /> Cashflow Forecast Projection
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            </CardTitle>
+            <CardDescription className="mt-0.5">
               Compare your baseline cashflow against active topic scenario trajectories
-            </p>
+            </CardDescription>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Starting Balance Input */}
             <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
-              <span className="text-slate-400">Start Balance:</span>
+              <span className="text-slate-400 font-medium">Start Balance:</span>
               <input
                 type="number"
                 value={startingBalance}
@@ -104,22 +96,23 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
             {/* Timeframe Buttons */}
             <div className="flex items-center p-1 bg-slate-950 border border-slate-800 rounded-xl text-xs">
               {[3, 6, 12, 24].map((m) => (
-                <button
+                <Button
                   key={m}
+                  variant={months === m ? 'primary' : 'ghost'}
+                  size="sm"
                   onClick={() => setMonths(m)}
                   aria-label={`${m} Months Timeframe`}
-                  className={`px-3 py-1 rounded-lg font-semibold transition cursor-pointer ${
-                    months === m
-                      ? 'bg-emerald-500 text-slate-950 shadow-md'
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                  className={cn(
+                    'px-3 py-1 text-xs',
+                    months !== m && 'text-slate-400 hover:text-slate-200'
+                  )}
                 >
                   {m}M
-                </button>
+                </Button>
               ))}
             </div>
           </div>
-        </div>
+        </CardHeader>
 
         {/* Recharts Area Chart */}
         <div className="h-[360px] w-full pt-2">
@@ -181,7 +174,7 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

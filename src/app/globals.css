@@ -1,17 +1,102 @@
 @import "tailwindcss";
 
+/**
+ * Cultivate Design System (CDS)
+ * Centralized Theme Specification
+ */
+@theme {
+  /* -------------------------------------------------------------------------- */
+  /* 1. Global Border Radius Tokens                                             */
+  /* -------------------------------------------------------------------------- */
+  --radius-sm: 0.5rem;    /* 8px  - Badges, chips, micro-toggles */
+  --radius-md: 0.75rem;   /* 12px - Buttons, inputs, selects, table cells */
+  --radius-lg: 1.0rem;    /* 16px - Cards, modals, containers, tab bars */
+  --radius-full: 9999px;  /* Pill badges, avatar dots, color swatches */
+
+  /* -------------------------------------------------------------------------- */
+  /* 2. Global Spacing Scale Tokens                                             */
+  /* -------------------------------------------------------------------------- */
+  --spacing-xs: 0.25rem;  /* 4px  - Micro gaps, badge paddings */
+  --spacing-sm: 0.5rem;   /* 8px  - Element gaps, button icon spacing */
+  --spacing-md: 1.0rem;   /* 16px - Card internal padding, form row gaps */
+  --spacing-lg: 1.5rem;   /* 24px - Container padding, section gaps */
+  --spacing-xl: 2.0rem;   /* 32px - Page margins, major layout section spacing */
+
+  /* -------------------------------------------------------------------------- */
+  /* 3. Global Color Semantics                                                  */
+  /* -------------------------------------------------------------------------- */
+  --color-background: #020617;        /* Slate 950 App Canvas */
+  --color-foreground: #f8fafc;        /* Slate 50 High-Contrast Copy */
+
+  /* Surface Layers */
+  --color-surface-base: #020617;
+  --color-surface-card: rgba(15, 23, 42, 0.6);
+  --color-surface-card-hover: rgba(30, 41, 59, 0.5);
+  --color-surface-elevated: #0f172a;
+  --color-surface-overlay: rgba(2, 6, 23, 0.8);
+
+  /* Brand & Accent Semantics */
+  --color-primary: #10b981;           /* Emerald 500 Primary Action */
+  --color-primary-hover: #34d399;     /* Emerald 400 Hover */
+  --color-primary-tint: rgba(16, 185, 129, 0.1);
+  --color-primary-border: rgba(16, 185, 129, 0.2);
+
+  --color-baseline: #3b82f6;          /* Cobalt Blue 500 System Baseline */
+  --color-baseline-tint: rgba(59, 130, 246, 0.1);
+  --color-baseline-border: rgba(59, 130, 246, 0.2);
+
+  /* Status Semantics */
+  --color-destructive: #f43f5e;       /* Rose 500 Expenses & Danger */
+  --color-destructive-hover: #fb7185; /* Rose 400 Hover */
+  --color-destructive-tint: rgba(244, 63, 94, 0.1);
+
+  --color-warning: #f59e0b;           /* Amber 500 Caution */
+  --color-warning-tint: rgba(245, 158, 11, 0.1);
+
+  --color-info: #14b8a6;              /* Teal 500 Information */
+  --color-info-tint: rgba(20, 184, 166, 0.1);
+
+  /* Border & Divider Tokens */
+  --color-border-subtle: rgba(30, 41, 59, 0.8);
+  --color-border-hover: #334155;
+  --color-border-focus: #10b981;
+
+  /* Text Semantics */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+
+  /* -------------------------------------------------------------------------- */
+  /* 4. Shadows & Elevation Glows                                               */
+  /* -------------------------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-glow-primary: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+  --shadow-glow-destructive: 0 10px 25px -5px rgba(244, 63, 94, 0.2);
+
+  /* -------------------------------------------------------------------------- */
+  /* 5. Typography Stack                                                        */
+  /* -------------------------------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  color-scheme: dark;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar styling */
+/* Custom Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

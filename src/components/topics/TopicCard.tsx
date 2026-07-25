@@ -1,5 +1,7 @@
 import { DbTopic } from '@/db/schema'
 import { Eye, EyeOff, Trash2, ShieldCheck } from 'lucide-react'
+import { Card, CardFooter, Badge, Button } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 interface TopicCardProps {
   topic: DbTopic
@@ -17,13 +19,14 @@ export function TopicCard({
   onDeleteTopic,
 }: TopicCardProps) {
   return (
-    <div
+    <Card
       data-testid={`topic-card-${topic.id}`}
-      className={`p-4 rounded-xl border transition flex flex-col justify-between relative group ${
+      className={cn(
+        'p-4 transition flex flex-col justify-between relative group',
         isSelectedFilter
           ? 'bg-slate-800/80 border-slate-600 ring-1 ring-slate-500/30'
           : 'bg-slate-950/40 border-slate-800/80 hover:border-slate-700'
-      }`}
+      )}
     >
       <div>
         <div className="flex items-center justify-between mb-2">
@@ -33,19 +36,21 @@ export function TopicCard({
           </div>
 
           {topic.isDefault ? (
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
+            <Badge variant="blue" badgeStyle="soft">
               <ShieldCheck className="w-3 h-3" /> Baseline
-            </span>
+            </Badge>
           ) : (
             onDeleteTopic && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onDeleteTopic(topic)}
                 title="Delete Topic"
                 aria-label={`Delete ${topic.name}`}
-                className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400 transition"
+                className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             )
           )}
         </div>
@@ -55,26 +60,22 @@ export function TopicCard({
         )}
       </div>
 
-      <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between mt-2">
-        <button
+      <CardFooter className="pt-3 mt-2">
+        <Button
+          variant={isSelectedFilter ? 'accent' : 'ghost'}
+          size="sm"
           onClick={() => onSelectFilter(topic.id)}
           aria-label={`Filter by ${topic.name}`}
-          className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition ${
-            isSelectedFilter ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
         >
           {isSelectedFilter ? 'Filtered' : 'Filter View'}
-        </button>
+        </Button>
 
         {!topic.isDefault && onToggleForecast && (
-          <button
+          <Button
+            variant={topic.isActiveInForecast ? 'accent' : 'outline'}
+            size="sm"
             onClick={() => onToggleForecast(topic)}
             aria-label={`Toggle forecast for ${topic.name}`}
-            className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg border transition ${
-              topic.isActiveInForecast
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300'
-            }`}
           >
             {topic.isActiveInForecast ? (
               <>
@@ -85,9 +86,9 @@ export function TopicCard({
                 <EyeOff className="w-3 h-3" /> Excluded from Forecast
               </>
             )}
-          </button>
+          </Button>
         )}
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   )
 }
