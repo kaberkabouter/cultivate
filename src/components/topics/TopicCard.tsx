@@ -41,14 +41,16 @@ export function TopicCard({
             </Badge>
           ) : (
             onDeleteTopic && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onDeleteTopic(topic)}
                 title="Delete Topic"
                 aria-label={`Delete ${topic.name}`}
-                className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400 transition cursor-pointer"
+                className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             )
           )}
         </div>

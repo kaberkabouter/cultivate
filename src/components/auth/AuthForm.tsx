@@ -84,16 +84,18 @@ export function AuthForm() {
       </form>
 
       <div className="mt-6 pt-6 border-t border-slate-800/80 text-center">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => {
             setIsRegister(!isRegister)
             setError(null)
           }}
-          className="text-xs text-slate-400 hover:text-emerald-400 transition cursor-pointer"
+          className="text-xs text-slate-400 hover:text-emerald-400"
         >
           {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
-        </button>
+        </Button>
       </div>
     </Card>
   )

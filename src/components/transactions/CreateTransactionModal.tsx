@@ -79,26 +79,24 @@ export function CreateTransactionModal({ topics, defaultTopicId }: CreateTransac
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type selector tabs */}
           <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800">
-            <button
+            <Button
               type="button"
+              variant={type === 'income' ? 'primary' : 'ghost'}
+              size="sm"
               onClick={() => setType('income')}
-              className={cn(
-                'py-2 rounded-lg text-xs font-bold transition cursor-pointer',
-                type === 'income' ? 'bg-emerald-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
-              )}
+              className={cn(type !== 'income' && 'text-slate-400 hover:text-slate-200')}
             >
               + Income
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={type === 'expense' ? 'destructive' : 'ghost'}
+              size="sm"
               onClick={() => setType('expense')}
-              className={cn(
-                'py-2 rounded-lg text-xs font-bold transition cursor-pointer',
-                type === 'expense' ? 'bg-rose-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
-              )}
+              className={cn(type !== 'expense' && 'text-slate-400 hover:text-slate-200')}
             >
               - Expense
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
