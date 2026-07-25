@@ -5,6 +5,7 @@ import { CreateTopicModal } from './CreateTopicModal'
 import { TopicCard } from './TopicCard'
 import { DbTopic } from '@/db/schema'
 import { Folder, CheckCircle2 } from 'lucide-react'
+import { useDialog } from '@/components/ui/DialogProvider'
 
 interface TopicListProps {
   topics: DbTopic[]
@@ -13,15 +14,26 @@ interface TopicListProps {
 }
 
 export function TopicList({ topics, activeTopicFilter, onSelectTopicFilter }: TopicListProps) {
+  const dialog = useDialog()
+
   async function handleToggleForecast(topic: DbTopic) {
     await toggleTopicForecastAction(topic.id, !topic.isActiveInForecast)
   }
 
   async function handleDelete(topic: DbTopic) {
-    if (confirm(`Are you sure you want to delete topic "${topic.name}" and all its transactions?`)) {
+    const confirmed = await dialog.confirm({
+      title: 'Delete Topic',
+      message: `Are you sure you want to delete topic "${topic.name}" and all its associated transactions? This action cannot be undone.`,
+      confirmText: 'Delete Topic',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    })
+
+    if (confirmed) {
       await deleteTopicAction(topic.id)
     }
   }
+
 
   return (
     <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 shadow-xl">

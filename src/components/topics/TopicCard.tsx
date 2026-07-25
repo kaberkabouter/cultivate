@@ -1,5 +1,5 @@
 import { DbTopic } from '@/db/schema'
-import { CheckCircle2, Eye, EyeOff, Trash2, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Trash2, ShieldCheck } from 'lucide-react'
 
 interface TopicCardProps {
   topic: DbTopic

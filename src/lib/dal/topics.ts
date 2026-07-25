@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { topics, transactions, DbTopic, NewDbTopic } from '@/db/schema'
+import { topics, DbTopic, NewDbTopic } from '@/db/schema'
 import { eq, and, desc } from 'drizzle-orm'
 import { getSession } from '@/lib/auth'
 

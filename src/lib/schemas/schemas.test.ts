@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { loginSchema, registerSchema } from './auth'
-import { createTopicSchema, updateTopicSchema } from './topic'
+import { createTopicSchema } from './topic'
 import { createTransactionSchema } from './transaction'
 
 describe('Zod Validation Schemas - Auth', () => {

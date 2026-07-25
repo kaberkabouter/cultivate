@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { TopicList } from '@/components/topics/TopicList'
 import { TransactionTable } from '@/components/transactions/TransactionTable'
 import { ForecastChart } from '@/components/forecast/ForecastChart'
-import { DbTopic, DbTransaction } from '@/db/schema'
+import { DbTopic } from '@/db/schema'
 import { TransactionWithTopic } from '@/lib/dal/transactions'
 import { LineChart, Folder, Receipt } from 'lucide-react'
 

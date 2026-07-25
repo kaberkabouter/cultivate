@@ -153,8 +153,9 @@ export function ForecastChart({ transactions, topics }: ForecastChartProps) {
                   fontSize: '12px',
                   boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.5)',
                 }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any, name: any) => [
-                  formatCurrency(Number(value)),
+                  formatCurrency(Number(value || 0)),
                   name === 'scenarioBalance' ? 'Scenario Balance' : 'Baseline Balance',
                 ]}
               />

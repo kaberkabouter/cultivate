@@ -24,8 +24,9 @@ export async function registerAction(formData: FormData) {
     await registerUser(parsed.data.email, parsed.data.password, parsed.data.displayName)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Registration failed.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Registration failed.'
+    return { error: errorMsg }
   }
 }
 
@@ -43,8 +44,9 @@ export async function loginAction(formData: FormData) {
     await loginUser(parsed.data.email, parsed.data.password)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Login failed.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Login failed.'
+    return { error: errorMsg }
   }
 }
 
@@ -69,8 +71,9 @@ export async function createTopicAction(formData: FormData) {
     await createTopic(parsed.data)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Failed to create topic.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Failed to create topic.'
+    return { error: errorMsg }
   }
 }
 
@@ -81,8 +84,9 @@ export async function toggleTopicForecastAction(topicId: string, isActive: boole
     await toggleTopicForecast(topicId, isActive)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Failed to toggle topic.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Failed to toggle topic.'
+    return { error: errorMsg }
   }
 }
 
@@ -93,8 +97,9 @@ export async function deleteTopicAction(topicId: string) {
     await deleteTopic(topicId)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Failed to delete topic.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Failed to delete topic.'
+    return { error: errorMsg }
   }
 }
 
@@ -118,8 +123,9 @@ export async function createTransactionAction(formData: FormData) {
     await createTransaction(parsed.data)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Failed to create transaction.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Failed to create transaction.'
+    return { error: errorMsg }
   }
 }
 
@@ -130,7 +136,8 @@ export async function deleteTransactionAction(id: string) {
     await deleteTransaction(id)
     revalidatePath('/')
     return { success: true }
-  } catch (err: any) {
-    return { error: err.message || 'Failed to delete transaction.' }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Failed to delete transaction.'
+    return { error: errorMsg }
   }
 }

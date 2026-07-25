@@ -5,10 +5,12 @@ import { ForecastTransaction, ForecastTopic } from '@/lib/forecast'
 
 // Mock recharts to avoid ResponsiveContainer DOM measurement warnings in JSDOM
 vi.mock('recharts', async () => {
-  const original = await vi.importActual<any>('recharts')
+  const original = await vi.importActual<Record<string, unknown>>('recharts')
   return {
     ...original,
-    ResponsiveContainer: ({ children }: any) => <div data-testid="mock-responsive-container">{children}</div>,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+      <div data-testid="mock-responsive-container">{children}</div>
+    ),
   }
 })
 
