@@ -17,7 +17,7 @@ describe('TransactionTable Delete Dialog Flow', () => {
     id: 'topic-1',
     userId: 'user-1',
     name: 'Salary',
-    description: null,
+    description: '',
     color: '#3b82f6',
     isDefault: true,
     isActiveInForecast: true,

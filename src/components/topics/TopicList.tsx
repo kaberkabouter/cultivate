@@ -6,6 +6,8 @@ import { TopicCard } from './TopicCard'
 import { DbTopic } from '@/db/schema'
 import { Folder, CheckCircle2 } from 'lucide-react'
 import { useDialog } from '@/components/ui/DialogProvider'
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 interface TopicListProps {
   topics: DbTopic[]
@@ -34,31 +36,31 @@ export function TopicList({ topics, activeTopicFilter, onSelectTopicFilter }: To
     }
   }
 
-
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 shadow-xl">
-      <div className="flex items-center justify-between mb-5">
+    <Card>
+      <CardHeader className="flex-row items-center justify-between mb-5 space-y-0">
         <div>
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+          <CardTitle>
             <Folder className="w-5 h-5 text-emerald-400" /> Topics & Projects
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          </CardTitle>
+          <CardDescription className="mt-0.5">
             Toggle topics to include/exclude them from scenario forecasts
-          </p>
+          </CardDescription>
         </div>
         <CreateTopicModal />
-      </div>
+      </CardHeader>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* View All Filter Option */}
         <button
           onClick={() => onSelectTopicFilter('all')}
           aria-label="View All Transactions"
-          className={`p-4 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between ${
+          className={cn(
+            'p-4 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between',
             activeTopicFilter === 'all'
               ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300 ring-1 ring-emerald-500/30'
               : 'bg-slate-950/40 border-slate-800/80 text-slate-400 hover:border-slate-700'
-          }`}
+          )}
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider">View All</span>
@@ -78,6 +80,6 @@ export function TopicList({ topics, activeTopicFilter, onSelectTopicFilter }: To
           />
         ))}
       </div>
-    </div>
+    </Card>
   )
 }

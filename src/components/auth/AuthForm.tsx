@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { registerAction, loginAction } from '@/app/actions'
 import { LogIn, UserPlus, Sparkles, AlertCircle } from 'lucide-react'
+import { Card, Input, Button } from '@/components/ui'
 
 export function AuthForm() {
   const [isRegister, setIsRegister] = useState(false)
@@ -24,7 +25,7 @@ export function AuthForm() {
   }
 
   return (
-    <div className="w-full max-w-md p-8 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800 shadow-2xl shadow-emerald-950/20 text-slate-100">
+    <Card className="w-full max-w-md p-8 shadow-2xl shadow-emerald-950/20 text-slate-100">
       <div className="flex flex-col items-center mb-8 text-center">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
           <Sparkles className="w-7 h-7 text-slate-950" />
@@ -46,62 +47,40 @@ export function AuthForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {isRegister && (
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Display Name
-            </label>
-            <input
-              name="displayName"
-              type="text"
-              placeholder="Eben Schutte"
-              className="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-slate-100 text-sm outline-none transition"
-            />
-          </div>
+          <Input
+            label="Display Name"
+            name="displayName"
+            type="text"
+            placeholder="Eben Schutte"
+          />
         )}
 
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Email Address
-          </label>
-          <input
-            name="email"
-            type="email"
-            required
-            placeholder="you@example.com"
-            className="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-slate-100 text-sm outline-none transition"
-          />
-        </div>
+        <Input
+          label="Email Address"
+          name="email"
+          type="email"
+          required
+          placeholder="you@example.com"
+        />
 
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Password
-          </label>
-          <input
-            name="password"
-            type="password"
-            required
-            placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-slate-100 text-sm outline-none transition"
-          />
-        </div>
+        <Input
+          label="Password"
+          name="password"
+          type="password"
+          required
+          placeholder="••••••••"
+        />
 
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-semibold text-sm transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          variant="primary"
+          size="lg"
+          isLoading={loading}
+          leftIcon={isRegister ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+          className="w-full mt-2"
         >
-          {loading ? (
-            <div className="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-          ) : isRegister ? (
-            <>
-              <UserPlus className="w-4 h-4" /> Create Account
-            </>
-          ) : (
-            <>
-              <LogIn className="w-4 h-4" /> Sign In
-            </>
-          )}
-        </button>
+          {isRegister ? 'Create Account' : 'Sign In'}
+        </Button>
       </form>
 
       <div className="mt-6 pt-6 border-t border-slate-800/80 text-center">
@@ -111,11 +90,11 @@ export function AuthForm() {
             setIsRegister(!isRegister)
             setError(null)
           }}
-          className="text-xs text-slate-400 hover:text-emerald-400 transition"
+          className="text-xs text-slate-400 hover:text-emerald-400 transition cursor-pointer"
         >
           {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
         </button>
       </div>
-    </div>
+    </Card>
   )
 }
