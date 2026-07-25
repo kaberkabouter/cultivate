@@ -5,6 +5,7 @@ import { TransactionWithTopic } from '@/lib/dal/transactions'
 import { DbTopic } from '@/db/schema'
 import { CreateTransactionModal } from './CreateTransactionModal'
 import { ArrowUpRight, ArrowDownRight, Repeat, Trash2, Receipt } from 'lucide-react'
+import { useDialog } from '@/components/ui/DialogProvider'
 
 interface TransactionTableProps {
   transactions: TransactionWithTopic[]
@@ -13,11 +14,22 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ transactions, topics, activeTopicFilter }: TransactionTableProps) {
+  const dialog = useDialog()
+
   async function handleDelete(id: string) {
-    if (confirm('Are you sure you want to delete this transaction?')) {
+    const confirmed = await dialog.confirm({
+      title: 'Delete Transaction',
+      message: 'Are you sure you want to delete this transaction entry? This action cannot be undone.',
+      confirmText: 'Delete Transaction',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    })
+
+    if (confirmed) {
       await deleteTransactionAction(id)
     }
   }
+
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
@@ -43,7 +55,7 @@ export function TransactionTable({ transactions, topics, activeTopicFilter }: Tr
       {transactions.length === 0 ? (
         <div className="p-12 text-center border border-dashed border-slate-800 rounded-xl bg-slate-950/30">
           <p className="text-slate-400 text-sm font-medium">No transactions recorded yet.</p>
-          <p className="text-xs text-slate-500 mt-1">Click "Add Transaction" above to create your first entry.</p>
+          <p className="text-xs text-slate-500 mt-1">Click &quot;Add Transaction&quot; above to create your first entry.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
